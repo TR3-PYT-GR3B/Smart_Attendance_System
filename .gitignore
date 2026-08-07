@@ -1,0 +1,48 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+
+# ── Virtual environments ──
+venv
+.venv/
+env/
+ENV/
+
+# ── Environment / secrets ──
+.env
+.env.*
+.env.example
+
+# ── Django ──
+db.sqlite3
+db.sqlite3-journal
+*.log
+staticfiles/
+
+# Media uploads: worker documents, enrolment / verification captures.
+# These contain personal and biometric data — never commit them.
+media/
+
+# ── ML model weights (downloaded separately, large binaries) ──
+ml_models/
+*.onnx
+
+# ── Testing / coverage ──
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+
+# ── Editors & OS ──
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
