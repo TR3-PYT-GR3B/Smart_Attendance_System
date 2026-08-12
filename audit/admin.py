@@ -1,13 +1,14 @@
 """Admin registration for the audit trail."""
 
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from django.utils.translation import gettext_lazy as _
 
 from .models import AuditLog
 
 
 @admin.register(AuditLog)
-class AuditLogAdmin(admin.ModelAdmin):
+class AuditLogAdmin(ModelAdmin):
     """Read-only interface to the audit trail — entries are append-only."""
 
     list_display = [

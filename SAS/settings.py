@@ -58,6 +58,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 DJANGO_APPS = [
+    'unfold',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -103,7 +104,7 @@ ROOT_URLCONF = 'SAS.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -175,8 +176,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
 # Media files (worker documents, enrolment / verification captures)
 # https://docs.djangoproject.com/en/6.1/topics/files/
@@ -278,3 +280,88 @@ FACE_MODEL_DIR = BASE_DIR / 'ml_models'
 
 # Geofencing
 DEFAULT_GEOFENCE_RADIUS_METERS = int(os.getenv('DEFAULT_GEOFENCE_RADIUS_METERS', '100'))
+
+# SAS/settings.py
+from django.templatetags.static import static
+UNFOLD = {
+    "SITE_TITLE": "Smart Attendance Admin",
+    "SITE_HEADER": "Smart Attendance System",
+    # 2. Add your logo and icon paths
+    "SITE_ICON": lambda request: static("images/admin-logo.png"),  # Small icon / favicon
+    "SITE_LOGO": lambda request: static("images/admin-logo.png"),  # Main logo in header/sidebar
+    "DASHBOARD_CALLBACK": "SAS.dashboard.custom_dashboard_callback",
+    
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        
+        "navigation": [
+            # --- DASHBOARD LINK ---
+            {
+                "title": "Navigation",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Dashboard",
+                        "icon": "dashboard",
+                        "link": "/admin/", 
+                    },
+                ],
+            },
+            
+            # --- CORE SYSTEM ---
+            {
+                "title": "Core System",
+                "separator": True, 
+                "items": [
+                    {
+                        "title": "Users & Accounts",
+                        "icon": "people", 
+                        "link": "/admin/accounts/user/",
+                    },
+                    {
+                        "title": "Attendance Records",
+                        "icon": "calendar_month",
+                        "link": "/admin/attendance/attendancerecord/",
+                    },
+                ],
+            },
+            
+            # --- HR & MANAGEMENT ---
+            {
+                "title": "HR & Management",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Leave Requests",
+                        "icon": "beach_access",
+                        "link": "/admin/leave/leaverequest/", 
+                    },
+                    {
+                        "title": "Approvals",
+                        "icon": "fact_check",
+                        "link": "/admin/approvals/accountapprovalrequest/",
+                    },
+                ]
+            },
+            
+            # --- ANALYTICS & LOGS ---
+            {
+                "title": "Analytics & Logs",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Daily Summaries",
+                        "icon": "bar_chart",
+                        "link": "/admin/analytics/departmentdailysummary/",
+                    },
+                    {
+                        "title": "Audit Logs",
+                        "icon": "history",
+                        "link": "/admin/audit/auditlog/",
+                    },
+                ]
+            },
+        ],
+    },
+}

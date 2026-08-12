@@ -1,0 +1,109 @@
+{% extends "unfold/layouts/base.html" %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+    
+    <!-- Header -->
+    <div>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">System Dashboard</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Overview of the Smart Attendance System</p>
+    </div>
+
+    <!-- Stats Row (KPI Cards) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Total Users</h2>
+            <p class="text-3xl font-bold text-primary-600">{{ total_users }}</p>
+        </div>
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Total Attendance Records</h2>
+            <p class="text-3xl font-bold text-green-500">{{ total_attendance_records }}</p>
+        </div>
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Total Approved Users</h2>
+            <p class="text-3xl font-bold text-green-500">{{ approved_count }}</p>
+        </div>
+
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Total Pending Users</h2>
+            <p class="text-3xl font-bold text-green-500">{{pending_count}}</p>
+        </div>
+
+    </div>
+
+    <!-- ROW 1: Main Bar Chart (Full Width) -->
+    <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-medium text-gray-700 dark:text-gray-200">Attendance Overview</h2>
+            <!-- Placeholder for future filters -->
+            <span class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 px-2 py-1 rounded">Filters coming soon</span>
+        </div>
+        <div class="relative h-72"> 
+            <canvas id="attendanceChart"></canvas>
+        </div>
+    </div>
+
+    <!-- ROW 2: Bottom Grid (Half & Half) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Left Side: Pie Chart -->
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-4">User Approval Status</h2>
+            <div class="relative h-64"> 
+                <canvas id="approvalChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Right Side: Empty Placeholder -->
+        <div class="p-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center min-h-[300px]">
+            <p class="text-gray-400 text-sm text-center">
+                <span class="block mb-2 text-2xl">+</span>
+                Reserved for future analytics
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Load Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Initialize Both Charts -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // --- 1. ATTENDANCE BAR CHART ---
+        const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+        new Chart(attendanceCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ attendance_labels|safe }},
+                datasets: [{
+                    label: 'Check-ins',
+                    data: {{ attendance_data|safe }},
+                    backgroundColor: '#4f46e5',
+                    borderRadius: 4
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        // --- 2. APPROVAL PIE CHART ---
+        const approvalCtx = document.getElementById('approvalChart').getContext('2d');
+        new Chart(approvalCtx, {
+            type: 'pie',
+            data: {
+                labels: {{ approval_labels|safe }},
+                datasets: [{
+                    data: {{ approval_data|safe }},
+                    backgroundColor: ['#22c55e', '#f59e0b'],
+                    borderWidth: 0
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        });
+
+    });
+</script>
+{% endblock %}

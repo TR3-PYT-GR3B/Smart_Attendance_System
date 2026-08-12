@@ -1,12 +1,13 @@
 """Admin registration for attendance records and verification attempts."""
 
 from django.contrib import admin
+from unfold.admin import ModelAdmin,TabularInline
 from django.utils.translation import gettext_lazy as _
 
 from .models import AttendanceRecord, VerificationAttempt
 
 
-class VerificationAttemptInline(admin.TabularInline):
+class VerificationAttemptInline(TabularInline):
     """The GPS/liveness/face checks behind a given record, shown read-only."""
 
     model = VerificationAttempt
@@ -20,7 +21,7 @@ class VerificationAttemptInline(admin.TabularInline):
 
 
 @admin.register(AttendanceRecord)
-class AttendanceRecordAdmin(admin.ModelAdmin):
+class AttendanceRecordAdmin(ModelAdmin):
     list_display = [
         'user',
         'work_location',
@@ -69,7 +70,7 @@ class AttendanceRecordAdmin(admin.ModelAdmin):
 
 
 @admin.register(VerificationAttempt)
-class VerificationAttemptAdmin(admin.ModelAdmin):
+class VerificationAttemptAdmin(ModelAdmin):
     """Read-only view of the verification log; entries are never hand-edited."""
 
     list_display = [

@@ -1,20 +1,21 @@
 """Admin registration for organisational structure."""
 
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from django.utils.translation import gettext_lazy as _
 
 from .models import Department, Organization, WorkLocation
 
 
 @admin.register(Organization)
-class OrganizationAdmin(admin.ModelAdmin):
+class OrganizationAdmin(ModelAdmin):
     list_display = ['name', 'is_active', 'created_at']
     list_filter = ['is_active']
     search_fields = ['name']
 
 
 @admin.register(Department)
-class DepartmentAdmin(admin.ModelAdmin):
+class DepartmentAdmin(ModelAdmin):
     list_display = ['name', 'organization', 'manager', 'created_at']
     list_filter = ['organization']
     search_fields = ['name', 'manager__email']
@@ -23,7 +24,7 @@ class DepartmentAdmin(admin.ModelAdmin):
 
 
 @admin.register(WorkLocation)
-class WorkLocationAdmin(admin.ModelAdmin):
+class WorkLocationAdmin(ModelAdmin):
     list_display = [
         'name',
         'department',

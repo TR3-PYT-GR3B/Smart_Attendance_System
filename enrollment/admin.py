@@ -1,13 +1,14 @@
 """Admin registration for face enrolment."""
 
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from django.utils.translation import gettext_lazy as _
 
 from .models import FaceProfile
 
 
 @admin.register(FaceProfile)
-class FaceProfileAdmin(admin.ModelAdmin):
+class FaceProfileAdmin(ModelAdmin):
     list_display = [
         'user',
         'liveness_score',

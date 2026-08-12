@@ -1,6 +1,7 @@
 """Admin registration for analytics summaries."""
 
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from django.utils.translation import gettext_lazy as _
 
 from .models import (
@@ -10,7 +11,7 @@ from .models import (
 )
 
 
-class SummaryBaseAdmin(admin.ModelAdmin):
+class SummaryBaseAdmin(ModelAdmin):
     """Shared admin surface for the roll-up tables; all read-only."""
 
     def has_add_permission(self, request):
@@ -27,7 +28,7 @@ class SummaryBaseAdmin(admin.ModelAdmin):
 
 
 @admin.register(WorkerDailySummary)
-class WorkerDailySummaryAdmin(SummaryBaseAdmin):
+class WorkerDailySummaryAdmin(SummaryBaseAdmin, ModelAdmin):
     list_display = [
         'user',
         'department',
@@ -70,7 +71,7 @@ class WorkerMonthlySummaryAdmin(SummaryBaseAdmin):
 
 
 @admin.register(DepartmentDailySummary)
-class DepartmentDailySummaryAdmin(SummaryBaseAdmin):
+class DepartmentDailySummaryAdmin(SummaryBaseAdmin, ModelAdmin):
     list_display = [
         'department',
         'date',

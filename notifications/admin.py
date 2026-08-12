@@ -1,13 +1,14 @@
 """Admin registration for notifications and device tokens."""
 
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from django.utils.translation import gettext_lazy as _
 
 from .models import DeviceToken, Notification
 
 
 @admin.register(Notification)
-class NotificationAdmin(admin.ModelAdmin):
+class NotificationAdmin(ModelAdmin):
     list_display = [
         'title',
         'recipient',
@@ -38,7 +39,7 @@ class NotificationAdmin(admin.ModelAdmin):
 
 
 @admin.register(DeviceToken)
-class DeviceTokenAdmin(admin.ModelAdmin):
+class DeviceTokenAdmin(ModelAdmin):
     list_display = [
         'user',
         'platform',

@@ -1,13 +1,14 @@
 """Admin registration for leave management."""
 
 from django.contrib import admin, messages
+from unfold.admin import ModelAdmin
 from django.utils.translation import gettext_lazy as _
 
 from .models import LeaveBalance, LeaveRequest, LeaveStatus, LeaveType
 
 
 @admin.register(LeaveType)
-class LeaveTypeAdmin(admin.ModelAdmin):
+class LeaveTypeAdmin(ModelAdmin):
     list_display = [
         'name',
         'default_days_per_year',
@@ -20,7 +21,7 @@ class LeaveTypeAdmin(admin.ModelAdmin):
 
 
 @admin.register(LeaveRequest)
-class LeaveRequestAdmin(admin.ModelAdmin):
+class LeaveRequestAdmin(ModelAdmin):
     list_display = [
         'user',
         'leave_type',
@@ -79,7 +80,7 @@ class LeaveRequestAdmin(admin.ModelAdmin):
 
 
 @admin.register(LeaveBalance)
-class LeaveBalanceAdmin(admin.ModelAdmin):
+class LeaveBalanceAdmin(ModelAdmin):
     list_display = [
         'user',
         'leave_type',

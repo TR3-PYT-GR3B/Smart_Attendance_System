@@ -1,13 +1,14 @@
 """Admin registration for the account approval queue."""
 
 from django.contrib import admin, messages
+from unfold.admin import ModelAdmin
 from django.utils.translation import gettext_lazy as _
 
 from .models import AccountApprovalRequest, ApprovalStatus
 
 
 @admin.register(AccountApprovalRequest)
-class AccountApprovalRequestAdmin(admin.ModelAdmin):
+class AccountApprovalRequestAdmin(ModelAdmin):
     list_display = [
         'user',
         'get_department',
