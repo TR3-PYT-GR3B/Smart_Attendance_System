@@ -13,5 +13,6 @@ virtual environment:
 ```
 
 Production configuration is supplied through environment variables. The
-current local database remains at `backend/db.sqlite3`; the planned hosted
-deployment will use PostgreSQL.
+current local database remains at `backend/db.sqlite3`; hosted deployments use
+Supabase PostgreSQL and private Supabase Storage. See the repository deployment
+guide for the complete Hugging Face configuration.

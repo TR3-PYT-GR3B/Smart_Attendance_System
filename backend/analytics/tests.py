@@ -1,5 +1,8 @@
 from django.contrib.staticfiles import finders
-from django.test import RequestFactory, TestCase
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 
 from SAS.dashboard import custom_dashboard_callback
@@ -40,3 +43,45 @@ class DashboardTests(TestCase):
         self.assertContains(response, 'Attendance Overview')
         self.assertContains(response, 'Pending Actions')
         self.assertIsNotNone(finders.find('js/dashboard.js'))
+
+
+class HealthProbeTests(TestCase):
+    def test_liveness_does_not_depend_on_external_services(self):
+        response = self.client.get(reverse('health-live'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {'status': 'ok'})
+        self.assertIn('no-store', response['Cache-Control'])
+
+    def test_readiness_reports_database_and_models(self):
+        with TemporaryDirectory() as model_directory:
+            required_files = ('models/detection.onnx', 'models/recognition.onnx')
+            for relative_path in required_files:
+                model_path = Path(model_directory, relative_path)
+                model_path.parent.mkdir(parents=True, exist_ok=True)
+                model_path.touch()
+
+            with override_settings(
+                FACE_MODEL_DIR=Path(model_directory),
+                FACE_MODEL_REQUIRED_FILES=required_files,
+            ):
+                response = self.client.get(reverse('health-ready'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(),
+            {
+                'status': 'ready',
+                'checks': {'database': True, 'face_models': True},
+            },
+        )
+
+    @override_settings(
+        FACE_MODEL_DIR=Path('missing-model-directory'),
+        FACE_MODEL_REQUIRED_FILES=('missing.onnx',),
+    )
+    def test_readiness_is_unavailable_when_models_are_missing(self):
+        response = self.client.get(reverse('health-ready'))
+
+        self.assertEqual(response.status_code, 503)
+        self.assertFalse(response.json()['checks']['face_models'])

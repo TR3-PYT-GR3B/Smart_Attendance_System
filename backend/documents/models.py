@@ -6,13 +6,14 @@ administrators review each one and mark it verified or rejected. Documents
 that expire (certifications, for example) carry an expiry date so renewals can
 be chased before they lapse.
 
-Files are written to ``MEDIA_ROOT`` and referenced by path. When this moves to
-production the same field can point at encrypted S3-compatible storage without
-the model changing.
+The model uses Django's storage interface: local development writes below
+``MEDIA_ROOT`` while production sends private objects to Supabase Storage.
 """
 
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -141,7 +142,7 @@ class WorkerDocument(models.Model):
     file = models.FileField(
         _('file'),
         upload_to=document_upload_path,
-        help_text=_('Stored under MEDIA_ROOT; move to encrypted object storage in production.'),
+        help_text=_('Stored privately; access is provided with a short-lived signed URL.'),
     )
     original_filename = models.CharField(_('original filename'), max_length=255, blank=True)
     file_size_bytes = models.PositiveBigIntegerField(_('file size (bytes)'), null=True, blank=True)
@@ -224,3 +225,10 @@ class WorkerDocument(models.Model):
         self.reviewed_at = timezone.now()
         self.rejection_reason = reason
         self.save()
+
+
+@receiver(post_delete, sender=WorkerDocument)
+def delete_worker_document_file(sender, instance, **kwargs):
+    """Removing the database record also removes its private storage object."""
+    if instance.file:
+        instance.file.delete(save=False)

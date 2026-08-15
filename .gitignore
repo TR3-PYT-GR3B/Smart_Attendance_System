@@ -17,7 +17,12 @@ ENV/
 # ── Environment / secrets ──
 .env
 .env.*
-.env.example
+!backend/.env.example
+
+# Android signing material is local/secret; only the documented template is tracked.
+frontend/attendx/android/key.properties
+frontend/attendx/android/*.jks
+frontend/attendx/android/*.keystore
 
 # ── Django ──
 db.sqlite3

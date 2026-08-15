@@ -1,6 +1,7 @@
 """API and lifecycle tests for department-wide document requests."""
 
 import tempfile
+from pathlib import Path
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
@@ -166,6 +167,21 @@ class DocumentRequestApiTests(APITestCase):
         self.client.force_authenticate(self.colleague)
         colleague = self.client.get(reverse('documents:request-list'))
         self.assertEqual(colleague.data['results'][0]['status'], 'pending')
+
+    def test_deleting_submission_removes_its_private_storage_object(self):
+        submission = WorkerDocument.objects.create(
+            request=self.document_request,
+            user=self.worker,
+            document_type=DocumentType.ID_CARD,
+            title=self.document_request.title,
+            file=SimpleUploadedFile('id.jpg', b'image', content_type='image/jpeg'),
+        )
+        stored_path = Path(submission.file.path)
+        self.assertTrue(stored_path.exists())
+
+        submission.delete()
+
+        self.assertFalse(stored_path.exists())
 
     def _submit_as(self, user, filename):
         self.client.force_authenticate(user)

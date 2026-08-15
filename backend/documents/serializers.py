@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from django.conf import settings
 from django.utils import timezone
 from rest_framework import serializers
 
@@ -22,9 +23,6 @@ ALLOWED_UPLOAD_CONTENT_TYPES = {
     # still validated and the file remains queued for human review.
     'application/octet-stream',
 }
-MAX_DOCUMENT_BYTES = 10 * 1024 * 1024
-
-
 class WorkerDocumentSerializer(serializers.ModelSerializer):
     """Review metadata for a worker's latest response to a request."""
 
@@ -136,8 +134,12 @@ class DocumentSubmissionSerializer(serializers.Serializer):
     )
 
     def validate_file(self, value):
-        if value.size > MAX_DOCUMENT_BYTES:
-            raise serializers.ValidationError('The document must be no larger than 10 MB.')
+        maximum_bytes = settings.MAX_DOCUMENT_UPLOAD_BYTES
+        if value.size > maximum_bytes:
+            maximum_mb = maximum_bytes / (1024 * 1024)
+            raise serializers.ValidationError(
+                f'The document must be no larger than {maximum_mb:g} MB.'
+            )
 
         extension = Path(value.name).suffix.lower()
         if extension not in ALLOWED_UPLOAD_EXTENSIONS:
