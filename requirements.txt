@@ -43,3 +43,4 @@ redis==8.1.0
 # the model weights are downloaded separately (not pip packages).
 onnxruntime==1.28.0
 opencv-python==5.0.0.93
+django-unfold
