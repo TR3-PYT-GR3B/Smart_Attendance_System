@@ -29,6 +29,12 @@ staticfiles/
 # These contain personal and biometric data — never commit them.
 media/
 
+# Local diagnostic captures may contain settings and request data.
+backend/debug/
+
+# Local pre-refactor archives, if explicitly created later.
+BACKUP/
+
 # ── ML model weights (downloaded separately, large binaries) ──
 ml_models/
 *.onnx
